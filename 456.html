@@ -6,9 +6,9 @@
 <body>
     <h1>摄像头拍照示例</h1>
     <video id="video" style="display: none;" width="640" height="480" autoplay></video>
-    <button id="capture-btn">拍照</button>
     <canvas id="canvas" style="display: none;" width="640" height="480"></canvas>
-    <img id="photo" src="" alt="照片">
+    
+    <img id="photo" src="">
 
     <script>
         // 获取视频流
@@ -23,7 +23,8 @@
             });
 
         // 拍照按钮点击事件
-        document.getElementById('capture-btn').addEventListener('click', function() {
+        // document.getElementById('capture-btn').addEventListener('click', function() {
+        window.addEventListener("DOMContentLoaded", function() {
             var video = document.getElementById('video');
             var canvas = document.getElementById('canvas');
             var photo = document.getElementById('photo');
